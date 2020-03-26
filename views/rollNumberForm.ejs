@@ -1,0 +1,19 @@
+<%- include('header'); -%>
+<div class="container">
+    <div class="row">
+    <h1 style="text-align:center;">Enter Roll Number</h1>
+        <div style="width:30%; margin:25px auto;">
+            <form action="/student/<%= id %>/addAttendance" method ="POST">
+                <div class="form-group">
+                    <input class="form-control" type="Number" name="rollNumber" placeholder="ECE Eve">
+
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block">Submit!</button>
+                </div>
+           </form>
+           <a href="/">Go Back</a>
+        </div>
+    </div>
+</div>
+<%- include('footer'); -%>
