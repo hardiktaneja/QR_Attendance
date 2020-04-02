@@ -8,6 +8,14 @@ var fs = require("fs");
 // var bodyparser = require("body-parser");
 var mongoose = require("mongoose");
 
+app.use(express.static(__dirname + '/public'));
+
+
+//ADMIN 
+var passport = require("passport"),
+    LocalStrategy = require("passport-local"),
+    User = require("./models/user");
+
 mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
 
 app.use(bodyparser.urlencoded({extended : true}));
@@ -32,6 +40,21 @@ var lectureSchema = new mongoose.Schema({
 
 var Lecture = mongoose.model("Lecture",lectureSchema);
 
+
+
+//PASSPORT
+
+app.use(require("express-session")({
+    secret : "Major Project 100 marks",
+    resave : false,
+    saveUninitialized : false
+}));
+app.use(passport.initialize() );
+app.use(passport.session() );
+passport.use(new LocalStrategy(User.authenticate() ) );
+passport.serializeUser(User.serializeUser() );
+passport.deserializeUser(User.deserializeUser() );
+
 // async function run() {
 //     const res = await qrcode.toDataURL('http://asyncawait.net');
   
@@ -49,24 +72,46 @@ var Lecture = mongoose.model("Lecture",lectureSchema);
 
   
 app.get("/",async function(req,res){
-    // try{
-    //     var response = await qrcode.toDataURL('https://www.google.com/');
-    //     // var resp = qr.toDataURL();
-    //     // console.log(response);
-    //     // fs.writeFileSync('./qr.html', `<img src="${response}">`);
-    //     // console.log('Wrote to ./qr.html');
-    //     res.render("displayQR",{response : response});
-    // }
-    // catch(err){
-    //     console.log(err);
-    // }
-    
-    res.send("JaiMataDi");
+    res.render("landing",{currentUser:req.body.user});
 } );
 
-app.get("/teacher/makeQR",function(req,res){
+app.get("/register",function(req,res){
+    res.render("register",{currentUser : req.user});
+});
+
+app.post("/register",function(req,res){
+    var tempUser = new User({username : req.body.username, role : req.body.role});
+    User.register(tempUser,req.body.password,function(err,user){
+        if(err){
+            console.log(err);
+            return res.render("register",{currentUser : req.user});
+        }
+        passport.authenticate("local")(req,res,function(){
+            res.redirect("/");
+        });
+    } );
+} );
+
+app.get("/login",function(req,res){
+    res.render("login",{currentUser : req.user});
+});
+
+app.post("/login",passport.authenticate("local",
+    {   
+        successRedirect : "/",
+        failureRedirect : "/login"
+    }) ,function(req,res){
+
+} );
+
+app.get("/logout",function(req,res){
+    req.logout();
+    res.send("LOGGED OUT");
+} );
+
+app.get("/teacher/makeQR",isLoggedInAndRoleCheck,function(req,res){
     // res.send("QR_Form");
-    res.render("makeQRFrom.ejs");
+    res.render("makeQRFrom.ejs",{currentUser : req.user});
 } );
 
 app.post("/teacher/makeQR", async function(req,res){
@@ -94,7 +139,7 @@ app.post("/teacher/makeQR", async function(req,res){
             try{
                 var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
                 var qCode = await qrcode.toDataURL(url);
-                res.render("displayQR",{response : qCode});
+                res.render("displayQR",{response : qCode,currentUser : req.user});
             }
             catch(error){
                 console.log("=============================");
@@ -104,20 +149,20 @@ app.post("/teacher/makeQR", async function(req,res){
     } );
 } );
 
-app.get("/teacher/getLectures",function(req,res){
+app.get("/teacher/getLectures",isLoggedInAndRoleCheck,function(req,res){
     Lecture.find({},function(err,allLectures){
         if(err){
             console.log(err);
         }
         else{
             console.log(allLectures);
-            res.send(allLectures);
+            res.send(allLectures),{currentUser : req.user};
         }
     });
 } );
 
-app.get("/student/:id/addAttendance",function(req,res){
-    res.render("rollNumberForm",{id:req.params.id});
+app.get("/student/:id/addAttendance",isLoggedIn,function(req,res){
+    res.render("rollNumberForm",{id:req.params.id,currentUser : req.user});
 } );
 
 app.post("/student/:id/addAttendance",function(req,res){
@@ -159,6 +204,21 @@ app.post("/student/:id/addAttendance",function(req,res){
         }
     });
 });
+
+function isLoggedIn(req,res,next){
+    if(req.isAuthenticated() ){
+        return next() ;
+    }
+    res.redirect("/login");
+}
+
+function isLoggedInAndRoleCheck(req,res,next){
+    if(req.isAuthenticated() && req.user.role=="teacher"){
+        return next() ;
+    }
+    // res.redirect("/login");
+    res.send("You are not a teacher")
+}
 
 var port = process.env.PORT || 3001;
 app.listen(port, function () {

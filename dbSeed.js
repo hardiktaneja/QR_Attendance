@@ -23,7 +23,7 @@ var Lecture = mongoose.model("Lecture",lectureSchema);
 
 // ADD A NEW STUDENT
 var stud = new Student;
-stud.name = "ABC"
+stud.name = "ABC";
 stud.rollNumber = 00151202816;
 
 Student.create(stud,function(err,s){
