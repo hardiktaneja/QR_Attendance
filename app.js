@@ -8,8 +8,12 @@ var fs = require("fs");
 // var bodyparser = require("body-parser");
 var mongoose = require("mongoose");
 
-app.use(express.static(__dirname + '/public'));
+//MODELS
+var Student = require("./models/student.js");
+var Teacher = require("./models/teacher.js");
+var Lecture = require("./models/lecture.js");
 
+app.use(express.static(__dirname + '/public'));
 
 //ADMIN 
 var passport = require("passport"),
@@ -20,55 +24,7 @@ mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,use
 
 app.use(bodyparser.urlencoded({extended : true}));
 
-//Mongoose Schema Setup
-var studentSchema = new mongoose.Schema({
-    name: String,
-    rollNumber: Number,
-    batchName : String,
-    batchYear : Number,
-    authId :{
-        type: mongoose.Schema.Types.ObjectId,
-        ref : "User"
-    }
-});
-
-var Student = mongoose.model("Student",studentSchema);
-
-var teacherSchema = new mongoose.Schema({
-    name : String,
-    staffId : Number,
-    lecturesTaken :[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "Lecture"
-    }],
-    authId : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
-    }
-});
-
-var Teacher = mongoose.model("Teacher",teacherSchema);
-//Lecture Schema
-var lectureSchema = new mongoose.Schema({
-    batchName : String,
-    batchYear : Number,
-    date : Date,
-    students :[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "Student"
-    }],
-    teacherID : {
-        type :mongoose.Schema.Types.ObjectId,
-        ref : "Teacher"
-    }
-});
-
-var Lecture = mongoose.model("Lecture",lectureSchema);
-
-
-
 //PASSPORT
-
 app.use(require("express-session")({
     secret : "Major Project 100 marks",
     resave : false,

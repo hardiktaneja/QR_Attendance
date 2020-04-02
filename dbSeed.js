@@ -26,14 +26,14 @@ var stud = new Student;
 stud.name = "ABC";
 stud.rollNumber = 00151202816;
 
-Student.create(stud,function(err,s){
-    if(err){
-        console.log(err);
-    }
-    else{
-        console.log(s);
-    }
-} )
+// Student.create(stud,function(err,s){
+//     if(err){
+//         console.log(err);
+//     }
+//     else{
+//         console.log(s);
+//     }
+// } )
 // var lect = new Lecture;
 // lect.batchName="ECE";
 // lect.batchYear = "2013";
