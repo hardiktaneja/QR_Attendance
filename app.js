@@ -23,11 +23,32 @@ app.use(bodyparser.urlencoded({extended : true}));
 //Mongoose Schema Setup
 var studentSchema = new mongoose.Schema({
     name: String,
-    rollNumber: Number
+    rollNumber: Number,
+    batchName : String,
+    batchYear : Number,
+    authId :{
+        type: mongoose.Schema.Types.ObjectId,
+        ref : "User"
+    }
 });
 
 var Student = mongoose.model("Student",studentSchema);
 
+var teacherSchema = new mongoose.Schema({
+    name : String,
+    staffId : Number,
+    lecturesTaken :[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "Lecture"
+    }],
+    authId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "User"
+    }
+});
+
+var Teacher = mongoose.model("Teacher",teacherSchema);
+//Lecture Schema
 var lectureSchema = new mongoose.Schema({
     batchName : String,
     batchYear : Number,
@@ -35,7 +56,11 @@ var lectureSchema = new mongoose.Schema({
     students :[{
         type:mongoose.Schema.Types.ObjectId,
         ref: "Student"
-    }]
+    }],
+    teacherID : {
+        type :mongoose.Schema.Types.ObjectId,
+        ref : "Teacher"
+    }
 });
 
 var Lecture = mongoose.model("Lecture",lectureSchema);
@@ -80,14 +105,31 @@ app.get("/register",function(req,res){
 });
 
 app.post("/register",function(req,res){
-    var tempUser = new User({username : req.body.username, role : req.body.role});
+    var tempUser = new User({username : req.body.username, role : "student"});
+    var tempStudent = new Student({
+        name : req.body.name,
+        rollNumber : req.body.rollNumber,
+        batchYear : req.body.batchYear,
+        batchName : req.body.batchName
+    });
+
+
     User.register(tempUser,req.body.password,function(err,user){
         if(err){
             console.log(err);
             return res.render("register",{currentUser : req.user});
         }
         passport.authenticate("local")(req,res,function(){
-            res.redirect("/");
+            tempStudent.authId = req.user.id;
+            Student.create(tempStudent,function(err,createdStudent){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    console.log(createdStudent);
+                    res.redirect("/");
+                }
+            } )
         });
     } );
 } );
@@ -108,6 +150,48 @@ app.get("/logout",function(req,res){
     req.logout();
     res.send("LOGGED OUT");
 } );
+app.get("/teacher",isLoggedInAndRoleCheck,function(req,res){
+    Teacher.find({authId : req.user.id}).populate("lecturesTaken").exec(function(err,teacher){
+        if(err){
+            console.log(err);
+            res.send("Teacher Not Found !");
+        }
+        else{
+            console.log(teacher);
+            res.render("teacherDashBoard",{fTeacher : teacher[0] ,currentUser:req.user});
+        }
+    } );
+} );
+app.get("/teacher/register",function(req,res){
+    res.render("teacherRegister",{currentUser:req.user});
+} );
+
+app.post("/teacher/register",function(req,res){
+    // res.send("yess");
+    var tempTeacher = new Teacher({
+        name : req.body.name,
+        staffId : req.body.staffId,
+    });
+    var tempUser = new User({username : req.body.username, role : "teacher"});
+    User.register(tempUser,req.body.password,function(err,user){
+        if(err){
+            console.log(err);
+            return res.render("register",{currentUser : req.user});
+        }
+        passport.authenticate("local")(req,res,function(){
+            tempTeacher.authId = req.user.id;
+            Teacher.create(tempTeacher,function(err,createdTeacher){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    console.log(createdTeacher);
+                    res.redirect("/");
+                }
+            } )
+        });
+    } );
+} );
 
 app.get("/teacher/makeQR",isLoggedInAndRoleCheck,function(req,res){
     // res.send("QR_Form");
@@ -126,36 +210,50 @@ app.post("/teacher/makeQR", async function(req,res){
     tempLecture.batchYear = batchYear;
     var date = new Date().toLocaleString();
     tempLecture.date = date;
+    tempLecture.teacherID = req.user.id;
 
-    //Adding temp-lecture to DB
-    Lecture.create(tempLecture, async function(err,lecture){
+    Teacher.find({authId : req.user.id},function(err,foundTeacher){
         if(err){
-            console.log("================");
             console.log(err);
+            res.send("Couldn't find the teacher")
         }
         else{
-            console.log(lecture);
-            console.log(lecture.id);
-            try{
-                var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
-                var qCode = await qrcode.toDataURL(url);
-                res.render("displayQR",{response : qCode,currentUser : req.user});
-            }
-            catch(error){
-                console.log("=============================");
-                console.log(error);
-            }
+                //Adding temp-lecture to DB
+            Lecture.create(tempLecture, async function(err,lecture){
+                if(err){
+                    console.log("================");
+                    console.log(err);
+                }
+                else{
+                    console.log(foundTeacher);
+                    foundTeacher[0].lecturesTaken.push(lecture.id);
+                    foundTeacher[0].save();
+                    console.log(foundTeacher);
+                    console.log(lecture);
+                    console.log(lecture.id);
+                    try{
+                        var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
+                        var qCode = await qrcode.toDataURL(url);
+                        res.render("displayQR",{response : qCode,currentUser : req.user});
+                    }      
+                    catch(error){
+                        console.log("=============================");
+                        console.log(error);
+                    }
+                }
+            });
         }
     } );
+
 } );
 
-app.get("/teacher/getLectures",isLoggedInAndRoleCheck,function(req,res){
+app.get("/teacher/getLectures",function(req,res){
     Lecture.find({},function(err,allLectures){
         if(err){
             console.log(err);
         }
         else{
-            console.log(allLectures);
+            // console.log(allLectures);
             res.send(allLectures),{currentUser : req.user};
         }
     });
