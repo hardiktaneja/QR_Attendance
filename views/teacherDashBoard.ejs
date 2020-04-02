@@ -9,7 +9,7 @@
         </tr>
         <% fTeacher.lecturesTaken.forEach(function(lecture){  %>
             <tr>
-                <td><%= lecture.id %></td>
+                <td><a href = "/teacher/<%= lecture.id %>/lecture"><%= lecture.id %></a></td>
                 <td><%= lecture.batchName %></td>
                 <td><%= lecture.batchYear %></td>
                 <td><%= lecture.date %></td>

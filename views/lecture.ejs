@@ -1,0 +1,18 @@
+<%- include('header'); -%>
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Roll-Number</th>
+            <th>Batch Name</th>
+            <th>Batch Year</th>
+        </tr>
+        <% fLecture.students.forEach(function(student){ %>
+            <tr>
+                <td><%= student.name %></td>
+                <td><%= student.rollNumber %></td>
+                <td><%= fLecture.batchName %></td>
+                <td><%= fLecture.batchYear %></td>
+            </tr>
+        <% } ) %>
+    </table>
+<%- include('footer'); -%>
