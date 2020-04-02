@@ -1,11 +1,47 @@
 <%- include('header'); -%>
-Sign Up
+<!-- <h1></h1> -->
 
-<form action="/register" method="POST">
+<!-- <form  method="POST">
     UserName:<input type="text" name="username" placeholder="User Name">
-    Password:<input type="text" name="password" placeholder="Password">
-    Role :<input type="text" name="role" placeholder="Role">
-    <button type="submit">Submit</button>
-    
-</form>
+    Password:<input type="password" name="password" placeholder="Password">
+    Role :<input type="text" name="role" placeholder="Role"> -->
+    <!-- Name : <input type="text" name="name" placeholder="Full Name">
+    Roll-Number:<input type="number" name="rollNumber" placeholder="Roll Number">
+    Batch Name:<input type="text" name="batchName" placeholder="ECE / CSE / IT / EEE">
+    Batch Year:<input type="number" name="batchYear" placeholder="20xx">
+    <button type="submit">Submit</button> -->
+<!-- </form> -->
+
+
+<div class="container">
+    <div class="row">
+    <h1 style="text-align:center;">Sign Up</h1>
+        <div style="width:30%; margin:25px auto;">
+            <form action="/register" method ="POST">
+                <div class="form-group">
+                    UserName:   <input type="text" name="username" placeholder="User Name">
+                </div>
+                <div class="form-group">
+                    Password:   <input type="password" name="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    Name :  <input type="text" name="name" placeholder="Full Name">
+                </div>
+                <div class="form-group">
+                    Roll-Number:    <input type="number" name="rollNumber" placeholder="Roll Number">
+                </div>
+                <div class="form-group">
+                    Batch Name:    <input type="text" name="batchName" placeholder="ECE / CSE / IT / EEE">
+                </div>
+                <div class="form-group">
+                    Batch Year:     <input type="number" name="batchYear" placeholder="20xx">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block">Submit!</button>
+                </div>
+           </form>
+           <a href="/">Go Back</a>
+        </div>
+    </div>
+</div>
 <%- include('footer'); -%>
