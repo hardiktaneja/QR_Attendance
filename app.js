@@ -26,7 +26,8 @@ var passport = require("passport"),
     LocalStrategy = require("passport-local"),
     User = require("./models/user");
 
-mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
+// mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
+mongoose.connect("mongodb://<hardikt>:<1taneja>@ds231956.mlab.com:31956/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
 
 app.use(bodyparser.urlencoded({extended : true}));
 
@@ -82,7 +83,11 @@ function isLoggedInAndRoleCheck(req,res,next){
     res.send("You are not a teacher")
 }
 
-var port = process.env.PORT || 3001;
-app.listen(port, function () {
-  console.log("Server Has Started!");
-});
+// var port = process.env.PORT || 3001;
+// app.listen(port, function () {
+//   console.log("Server Has Started!");
+// });
+
+app.listen(process.env.PORT, process.env.IP, function(){
+    console.log("Server Has Started!");
+ });
