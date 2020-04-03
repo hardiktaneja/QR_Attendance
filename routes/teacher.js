@@ -59,7 +59,7 @@ router.post("/teacher/makeQR", async function(req,res){
                     // console.log(lecture.id);
                     try{
                         // var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
-                        var url = "https://afternoon-woodland-85688.herokuapp.com/"+lecture.id+"/addAttendance";
+                        var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+lecture.id+"/addAttendance";
                         var qCode = await qrcode.toDataURL(url);
                         res.render("displayQR",{response : qCode,currentUser : req.user,lectureId : lecture.id});
                     }      
