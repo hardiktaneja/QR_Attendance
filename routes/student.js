@@ -61,8 +61,11 @@ router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
                                     console.log("Could'nt save in Student");
                                     res.redirect("/student");
                                 }
+                                else{
+                                    res.send("SUCCESS");
+                                }
                             } );
-                            res.redirect("/student");
+                            // res.redirect("/student");
                         }
                     });
                     
