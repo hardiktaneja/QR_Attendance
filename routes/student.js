@@ -5,6 +5,22 @@ var Student = require("../models/student.js");
 // var Teacher = require("../models/teacher.js");
 var Lecture = require("../models/lecture.js");
 
+router.get("/student",isLoggedIn,function(req,res){
+    var sId = req.user.id;
+    console.log(sId);
+    Student.findOne({authId : sId}).populate("lecturesAttended").exec(function(err,foundStudent){
+        if(err){
+            console.log(err);
+            // res.redirect("/");
+            res.render("landing",{currentUser:req.user});
+        }
+        else{
+            console.log(foundStudent);
+            res.render("studentDashboard",{currentUser : req.user,fStudent : foundStudent});
+        }
+    } );
+} );
+
 router.get("/student/:id/addAttendance",isLoggedIn,function(req,res){
     res.render("rollNumberForm",{id:req.params.id,currentUser : req.user});
 } );
@@ -37,9 +53,16 @@ router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
                             console.log(err);
                         }
                         else{
-                            console.log(foundLecture);
+                            // console.log(foundLecture);
                             console.log("SUCCESS");
-                            res.redirect("/teacher/getLectures");
+                            foundStudent.lecturesAttended.push(lectureID);
+                            foundStudent.save(function(err,student){
+                                if(err){
+                                    console.log("Could'nt save in Student");
+                                    res.redirect("/student");
+                                }
+                            } );
+                            res.redirect("/student");
                         }
                     });
                     

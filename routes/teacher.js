@@ -6,20 +6,20 @@ var qrcode = require("qrcode");
 var Teacher = require("../models/teacher.js");
 var Lecture = require("../models/lecture.js");
 
-router.get("/teacher",isLoggedInAndRoleCheck,function(req,res){
+router.get("/teacher",isLoggedIn,roleCheck,function(req,res){
     Teacher.find({authId : req.user.id}).populate("lecturesTaken").exec(function(err,teacher){
         if(err){
             console.log(err);
             res.send("Teacher Not Found !");
         }
         else{
-            console.log(teacher);
+            // console.log(teacher);
             res.render("teacherDashBoard",{fTeacher : teacher[0] ,currentUser:req.user});
         }
     } );
 } );
 
-router.get("/teacher/makeQR",isLoggedInAndRoleCheck,function(req,res){
+router.get("/teacher/makeQR",isLoggedIn,roleCheck,function(req,res){
     // res.send("QR_Form");
     res.render("makeQRFrom.ejs",{currentUser : req.user});
 } );
@@ -54,13 +54,13 @@ router.post("/teacher/makeQR", async function(req,res){
                     // console.log(foundTeacher);
                     foundTeacher[0].lecturesTaken.push(lecture.id);
                     foundTeacher[0].save();
-                    console.log(foundTeacher);
+                    // console.log(foundTeacher);
                     // console.log(lecture);
-                    console.log(lecture.id);
+                    // console.log(lecture.id);
                     try{
                         var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
                         var qCode = await qrcode.toDataURL(url);
-                        res.render("displayQR",{response : qCode,currentUser : req.user});
+                        res.render("displayQR",{response : qCode,currentUser : req.user,lectureId : lecture.id});
                     }      
                     catch(error){
                         console.log("=============================");
@@ -94,7 +94,7 @@ router.get("/teacher/:id/lecture",function(req,res){
                 res.send("Lecture Not Found!");
             }
             else{
-                console.log(lecture);
+                // console.log(lecture);
                 res.render("lecture",{currentUser:req.user,fLecture : lecture});
             }
     });
@@ -113,6 +113,15 @@ function isLoggedInAndRoleCheck(req,res,next){
     }
     // res.redirect("/login");
     res.send("You are not a teacher")
+}
+
+function roleCheck(req,res,next){
+    if(req.user.role=="teacher"){
+        return next() ;
+    }
+    else{
+        res.send("You are not a teacher")
+    }
 }
 
 module.exports = router ;

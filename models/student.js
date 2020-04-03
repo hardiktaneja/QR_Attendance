@@ -7,7 +7,11 @@ var studentSchema = new mongoose.Schema({
         authId :{
             type: mongoose.Schema.Types.ObjectId,
             ref : "User"
-        }
+        },
+        lecturesAttended :[{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Lecture"
+        }]
     });
     // studentSchema.plugin(passportLocalMongoose);
     

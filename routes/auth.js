@@ -5,6 +5,7 @@ var passport = require("passport");
 //MODELS
 var Student = require("../models/student.js");
 var Teacher = require("../models/teacher.js");
+var User = require("../models/user.js");
 // var Lecture = require("../models/lecture.js");
 
 router.get("/register",function(req,res){
@@ -34,7 +35,8 @@ router.post("/register",function(req,res){
                 }
                 else{
                     console.log(createdStudent);
-                    res.redirect("/");
+                    // res.redirect("/");
+                    res.render("landing",{currentUser:req.user});
                 }
             } )
         });
@@ -82,7 +84,8 @@ router.post("/teacher/register",function(req,res){
                 }
                 else{
                     console.log(createdTeacher);
-                    res.redirect("/");
+                    // res.redirect("/");
+                    res.render("landing",{currentUser:req.user});
                 }
             } )
         });
