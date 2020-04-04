@@ -5,21 +5,24 @@ var qrcode = require("qrcode");
 // var Student = require("../models/student.js");
 var Teacher = require("../models/teacher.js");
 var Lecture = require("../models/lecture.js");
+var middleware = require("../middleware");
 
-router.get("/teacher",isLoggedIn,roleCheck,function(req,res){
+router.get("/teacher",middleware.isLoggedIn,middleware.roleCheckTeacher,function(req,res){
     Teacher.find({authId : req.user.id}).populate("lecturesTaken").exec(function(err,teacher){
         if(err){
             console.log(err);
-            res.send("Teacher Not Found !");
+            req.flash("error","Teacher Not Found!");
+            // res.send("Teacher Not Found !");
+            res.redirect("back");
         }
         else{
             // console.log(teacher);
-            res.render("teacherDashBoard",{fTeacher : teacher[0] ,currentUser:req.user});
+            res.render("teacherDashBoard",{fTeacher : teacher[0]});
         }
     } );
 } );
 
-router.get("/teacher/makeQR",isLoggedIn,roleCheck,function(req,res){
+router.get("/teacher/makeQR",middleware.isLoggedIn,middleware.roleCheckTeacher,function(req,res){
     // res.send("QR_Form");
     res.render("makeQRFrom.ejs",{currentUser : req.user});
 } );
@@ -41,14 +44,19 @@ router.post("/teacher/makeQR", async function(req,res){
     Teacher.find({authId : req.user.id},function(err,foundTeacher){
         if(err){
             console.log(err);
-            res.send("Couldn't find the teacher")
+            req.flash("error","Teacher Not Found!");
+            // res.send("Teacher Not Found !");
+            res.redirect("back");
         }
         else{
                 //Adding temp-lecture to DB
             Lecture.create(tempLecture, async function(err,lecture){
                 if(err){
-                    console.log("================");
+                    // console.log("================");
                     console.log(err);
+                    req.flash("error","Lecture Not Found!");
+                    // res.send("Teacher Not Found !");
+                    res.redirect("back");
                 }
                 else{
                     // console.log(foundTeacher);
@@ -61,11 +69,14 @@ router.post("/teacher/makeQR", async function(req,res){
                         // var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
                         var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+lecture.id+"/addAttendance";
                         var qCode = await qrcode.toDataURL(url);
-                        res.render("displayQR",{response : qCode,currentUser : req.user,lectureId : lecture.id});
+                        res.render("displayQR",{response : qCode,lectureId : lecture.id});
                     }      
                     catch(error){
-                        console.log("=============================");
+                        // console.log("=============================");
                         console.log(error);
+                        req.flash("error","QR Couldn't be Created!");
+                        // res.send("Teacher Not Found !");
+                        res.redirect("back");
                     }
                 }
             });
@@ -86,43 +97,46 @@ router.post("/teacher/makeQR", async function(req,res){
 //     });
 // } );
 
-router.get("/teacher/:id/lecture",function(req,res){
+router.get("/teacher/:id/lecture",middleware.isLoggedIn,middleware.roleCheckTeacher,function(req,res){
     var lecId = req.params.id;
 
     Lecture.findById(lecId).populate("students").exec(function(err,lecture){
             if(err){
                 console.log(err);
-                res.send("Lecture Not Found!");
+                req.flash("error","Lecture Not Found!");
+                // res.send("Teacher Not Found !");
+                res.redirect("back");
+                // res.send("Lecture Not Found!");
             }
             else{
                 // console.log(lecture);
-                res.render("lecture",{currentUser:req.user,fLecture : lecture});
+                res.render("lecture",{fLecture : lecture});
             }
     });
 } );
 
-function isLoggedIn(req,res,next){
-    if(req.isAuthenticated() ){
-        return next() ;
-    }
-    res.redirect("/login");
-}
+// function isLoggedIn(req,res,next){
+//     if(req.isAuthenticated() ){
+//         return next() ;
+//     }
+//     res.redirect("/login");
+// }
 
-function isLoggedInAndRoleCheck(req,res,next){
-    if(req.isAuthenticated() && req.user.role=="teacher"){
-        return next() ;
-    }
-    // res.redirect("/login");
-    res.send("You are not a teacher")
-}
+// function isLoggedInAndRoleCheck(req,res,next){
+//     if(req.isAuthenticated() && req.user.role=="teacher"){
+//         return next() ;
+//     }
+//     // res.redirect("/login");
+//     res.send("You are not a teacher")
+// }
 
-function roleCheck(req,res,next){
-    if(req.user.role=="teacher"){
-        return next() ;
-    }
-    else{
-        res.send("You are not a teacher")
-    }
-}
+// function roleCheck(req,res,next){
+//     if(req.user.role=="teacher"){
+//         return next() ;
+//     }
+//     else{
+//         res.send("You are not a teacher")
+//     }
+// }
 
 module.exports = router ;

@@ -6,12 +6,15 @@ var qrcode = require("qrcode");
 app.set("view engine","ejs");
 var fs = require("fs");
 // var bodyparser = require("body-parser");
-var mongoose = require("mongoose");
+var mongoose = require("mongoose"),
+    flash = require("connect-flash");
 
 //MODELS
 var Student = require("./models/student.js");
 var Teacher = require("./models/teacher.js");
 var Lecture = require("./models/lecture.js");
+
+app.use(flash() );
 
 //ROUTESS
 
@@ -26,9 +29,9 @@ var passport = require("passport"),
     LocalStrategy = require("passport-local"),
     User = require("./models/user");
 
-// mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
 var str1 = "mongodb://hardik:redsozpasta123@ds231956.mlab.com:31956/qr_attendance";
-mongoose.connect(str1,{ useNewUrlParser: true,useUnifiedTopology: true });
+// mongoose.connect(str1,{ useNewUrlParser: true,useUnifiedTopology: true });
 
 app.use(bodyparser.urlencoded({extended : true}));
 
@@ -44,6 +47,12 @@ passport.use(new LocalStrategy(User.authenticate() ) );
 passport.serializeUser(User.serializeUser() );
 passport.deserializeUser(User.deserializeUser() );
 
+app.use(function(req,res,next){
+    res.locals.currentUser=req.user;
+    res.locals.error=req.flash("error");
+    res.locals.success=req.flash("success");
+    next();
+ });
 
 app.use(authRoutes);
 app.use(teacherRoutes);
@@ -66,7 +75,7 @@ app.use(studentRoutes);
 
   
 app.get("/",async function(req,res){
-    res.render("landing",{currentUser:req.body.user});
+    res.render("landing");
 } );
 
 function isLoggedIn(req,res,next){
@@ -84,11 +93,11 @@ function isLoggedInAndRoleCheck(req,res,next){
     res.send("You are not a teacher")
 }
 
-// var port = process.env.PORT || 3001;
-// app.listen(port, function () {
-//   console.log("Server Has Started!");
-// });
+var port = process.env.PORT || 3001;
+app.listen(port, function () {
+  console.log("Server Has Started!");
+});
 
-app.listen(process.env.PORT, process.env.IP, function(){
-    console.log("Server Has Started!");
- });
+// app.listen(process.env.PORT, process.env.IP, function(){
+//     console.log("Server Has Started!");
+//  });

@@ -4,28 +4,30 @@ var router = express.Router();
 var Student = require("../models/student.js");
 // var Teacher = require("../models/teacher.js");
 var Lecture = require("../models/lecture.js");
+var middleware = require("../middleware");
 
-router.get("/student",isLoggedIn,function(req,res){
+router.get("/student",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){
     var sId = req.user.id;
     console.log(sId);
     Student.findOne({authId : sId}).populate("lecturesAttended").exec(function(err,foundStudent){
         if(err){
             console.log(err);
             // res.redirect("/");
-            res.render("landing",{currentUser:req.user});
+            req.flash("error","Couldn't find Student,check roll-number in your ID");
+            res.render("landing");
         }
         else{
             console.log(foundStudent);
-            res.render("studentDashboard",{currentUser : req.user,fStudent : foundStudent});
+            res.render("studentDashboard",{fStudent : foundStudent});
         }
     } );
 } );
 
-router.get("/student/:id/addAttendance",isLoggedIn,function(req,res){
-    res.render("rollNumberForm",{id:req.params.id,currentUser : req.user});
+router.get("/student/:id/addAttendance",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){
+    res.render("rollNumberForm",{id:req.params.id});
 } );
 
-router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
+router.post("/student/:id/addAttendance",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){
     //Getting Request Params - roll-number, lecture-id
     var rollNumberAdd = req.body.rollNumber;
     var lectureID = req.params.id;
@@ -35,15 +37,23 @@ router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
         //If Error Console.log it
         if(err){
             console.log("COULDN'T FIND THE LECTURE");
+            req.flash("error","COULDN'T FIND THE LECTURE")
             console.log(err);
+            res.redirect("/student");
         }
         //Else Add Students Attendance and Save It
         else{
             Student.findOne({"rollNumber":rollNumberAdd},function(err,foundStudent){
                 //If Error Console.log it
                 if(err){
-                    console.log("WEEEEEE");
+                    req.flash("error","Couldn't find Student!");
                     console.log(err);
+                    res.redirect('back');
+                }
+                else if(!foundStudent){
+                    req.flash("error","Entered Roll Number Doesn't Match with Student!");
+                    // res.redirect("/student/"+lectureID+"/addAttendance");
+                    res.redirect('back');
                 }
                 else{
                     // Else add to students and SAVEE!
@@ -51,6 +61,8 @@ router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
                     foundLecture.save(function(err,foundLecture){
                         if(err){
                             console.log(err);
+                            req.flash("error","Couldn't Save Lecture, try again.");
+                            res.redirect('back');
                         }
                         else{
                             // console.log(foundLecture);
@@ -59,13 +71,15 @@ router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
                             foundStudent.save(function(err,student){
                                 if(err){
                                     console.log("Could'nt save in Student");
-                                    res.redirect("/student");
+                                    req.flash("error","Couldn't Save Lecture, try again.");
+                                    res.redirect('back');
                                 }
                                 else{
-                                    res.send("SUCCESS");
+                                    req.flash("success","Attendance Addition Successful!");
+                                    res.redirect("/student");
                                 }
                             } );
-                            // res.redirect("/student");
+                            
                         }
                     });
                     
@@ -75,19 +89,19 @@ router.post("/student/:id/addAttendance",isLoggedIn,function(req,res){
     });
 });
 
-function isLoggedIn(req,res,next){
-    if(req.isAuthenticated() ){
-        return next() ;
-    }
-    res.redirect("/login");
-}
+// function isLoggedIn(req,res,next){
+//     if(req.isAuthenticated() ){
+//         return next() ;
+//     }
+//     res.redirect("/login");
+// }
 
-function isLoggedInAndRoleCheck(req,res,next){
-    if(req.isAuthenticated() && req.user.role=="teacher"){
-        return next() ;
-    }
-    // res.redirect("/login");
-    res.send("You are not a teacher")
-}
+// function isLoggedInAndRoleCheck(req,res,next){
+//     if(req.isAuthenticated() && req.user.role=="teacher"){
+//         return next() ;
+//     }
+//     // res.redirect("/login");
+//     res.send("You are not a teacher")
+// }
 
 module.exports = router;
