@@ -8,6 +8,7 @@ var fs = require("fs");
 // var bodyparser = require("body-parser");
 var mongoose = require("mongoose"),
     flash = require("connect-flash"),
+    session = require('express-session'),
     MongoStore = require('connect-mongo')(session);
 
 //MODELS
@@ -41,7 +42,7 @@ app.use(require("express-session")({
     secret : "Major Project 100 marks",
     resave : false,
     saveUninitialized : false,
-    store: new MongoStore({ mongooseConnection: mongoose.Connection })
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 app.use(passport.initialize() );
 app.use(passport.session() );
