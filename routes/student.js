@@ -23,13 +23,13 @@ router.get("/student",middleware.isLoggedIn,middleware.roleCheckStudent,function
     } );
 } );
 
-router.get("/student/:id/addAttendance",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){
-    res.render("rollNumberForm",{id:req.params.id});
-} );
+// router.get("/student/:id/:try1/addAttendance",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){
+//     res.render("rollNumberForm",{id:req.params.id,try1 : req.params.try1 });
+// } );
 
-router.post("/student/:id/addAttendance",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){
+router.get("/student/:id/:try/addAttendance",middleware.isLoggedIn,middleware.roleCheckStudent,function(req,res){ 
     //Getting Request Params - roll-number, lecture-id
-    var rollNumberAdd = req.body.rollNumber;
+    // var rollNumberAdd = req.body.rollNumber;
     var lectureID = req.params.id;
 
     //Get Lecture from ID
@@ -43,7 +43,17 @@ router.post("/student/:id/addAttendance",middleware.isLoggedIn,middleware.roleCh
         }
         //Else Add Students Attendance and Save It
         else{
-            Student.findOne({"rollNumber":rollNumberAdd},function(err,foundStudent){
+            // If Request is Stale Check And Ask to Scan QR-Code Again
+            var lectureTime = foundLecture.date;
+            var currrentTime = new Date();
+            var numOfTry = req.params.try;
+            lectureTime.setSeconds(lectureTime.getSeconds()+ numOfTry*30);
+            if(currrentTime > lectureTime){
+                req.flash("error","Scan Again ,QR-Code Expired!");
+                res.redirect("/student");
+                return;
+            }
+            Student.findOne({"authId":req.user.id},function(err,foundStudent){
                 //If Error Console.log it
                 if(err){
                     req.flash("error","Couldn't find Student!");

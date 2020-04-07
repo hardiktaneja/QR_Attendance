@@ -28,6 +28,24 @@ router.get("/teacher/makeQR",middleware.isLoggedIn,middleware.roleCheckTeacher,f
 } );
 
 router.post("/teacher/makeQR", async function(req,res){
+    if(req.session.qrCreated){
+        var numOfTry = req.session.numOfTry +1;
+        try{
+            // var url = "http://localhost:3001/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
+            var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
+            var qCode = await qrcode.toDataURL(url);
+            req.session.numOfTry = numOfTry;
+            res.render("displayQR",{response : qCode,lectureId : req.session.lectureId});
+            return;
+        }      
+        catch(error){
+            // console.log("=============================");
+            console.log(error);
+            req.flash("error","QR Couldn't be Created!");
+            // res.send("Teacher Not Found !");
+            res.redirect("back");
+        }
+    }
     //Getting Parameters from form
     var batchName = req.body.batchName;
     var batchYear = req.body.batchYear;
@@ -37,7 +55,7 @@ router.post("/teacher/makeQR", async function(req,res){
     var tempLecture = new Lecture;
     tempLecture.batchName = batchName;
     tempLecture.batchYear = batchYear;
-    var date = new Date().toLocaleString();
+    var date = new Date();
     tempLecture.date = date;
     tempLecture.teacherID = req.user.id;
 
@@ -52,30 +70,26 @@ router.post("/teacher/makeQR", async function(req,res){
                 //Adding temp-lecture to DB
             Lecture.create(tempLecture, async function(err,lecture){
                 if(err){
-                    // console.log("================");
                     console.log(err);
                     req.flash("error","Lecture Not Found!");
-                    // res.send("Teacher Not Found !");
                     res.redirect("back");
                 }
                 else{
-                    // console.log(foundTeacher);
                     foundTeacher[0].lecturesTaken.push(lecture.id);
                     foundTeacher[0].save();
-                    // console.log(foundTeacher);
-                    // console.log(lecture);
-                    // console.log(lecture.id);
                     try{
                         // var url = "http://localhost:3001/student/"+lecture.id+"/addAttendance";
-                        var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+lecture.id+"/addAttendance";
+                        var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+lecture.id+"/"+1+"/addAttendance";
                         var qCode = await qrcode.toDataURL(url);
+                        req.session.qrCreated = true;
+                        req.session.lectureId = lecture.id;
+                        req.session.numOfTry = 1;
+                        console.log(lecture.id);
                         res.render("displayQR",{response : qCode,lectureId : lecture.id});
                     }      
                     catch(error){
-                        // console.log("=============================");
                         console.log(error);
                         req.flash("error","QR Couldn't be Created!");
-                        // res.send("Teacher Not Found !");
                         res.redirect("back");
                     }
                 }
@@ -85,17 +99,6 @@ router.post("/teacher/makeQR", async function(req,res){
 
 } );
 
-// router.get("/teacher/getLectures",function(req,res){
-//     Lecture.find({},function(err,allLectures){
-//         if(err){
-//             console.log(err);
-//         }
-//         else{
-//             // console.log(allLectures);
-//             res.send(allLectures),{currentUser : req.user};
-//         }
-//     });
-// } );
 
 router.get("/teacher/:id/lecture",middleware.isLoggedIn,middleware.roleCheckTeacher,function(req,res){
     var lecId = req.params.id;
@@ -114,29 +117,5 @@ router.get("/teacher/:id/lecture",middleware.isLoggedIn,middleware.roleCheckTeac
             }
     });
 } );
-
-// function isLoggedIn(req,res,next){
-//     if(req.isAuthenticated() ){
-//         return next() ;
-//     }
-//     res.redirect("/login");
-// }
-
-// function isLoggedInAndRoleCheck(req,res,next){
-//     if(req.isAuthenticated() && req.user.role=="teacher"){
-//         return next() ;
-//     }
-//     // res.redirect("/login");
-//     res.send("You are not a teacher")
-// }
-
-// function roleCheck(req,res,next){
-//     if(req.user.role=="teacher"){
-//         return next() ;
-//     }
-//     else{
-//         res.send("You are not a teacher")
-//     }
-// }
 
 module.exports = router ;
