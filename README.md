@@ -2,7 +2,9 @@
 
 A Website for taking Attendance digitally.
 
-#Features :
+Link : https://afternoon-woodland-85688.herokuapp.com/
+
+# Features :
 - Authentication : Log In, Sign Up etc.
 - QR Code Generation and Display (via Teacher's ID ).
 - QR Code Dynamically Changes every 30 seconds to prevent proxys.
