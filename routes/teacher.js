@@ -35,7 +35,16 @@ router.post("/teacher/makeQR", async function(req,res){
             var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
             var qCode = await qrcode.toDataURL(url);
             req.session.numOfTry = numOfTry;
-            res.render("displayQR",{response : qCode,lectureId : req.session.lectureId});
+            req.session.save(function(err){
+                if(err){
+                    console.log(err);
+                    req.flash("Try Again, Some error occured!");
+                    res.redirect("back");
+                }
+                else{
+                    res.render("displayQR",{response : qCode,lectureId : req.session.lectureId});
+                }
+            } );
             return;
         }      
         catch(error){
@@ -85,7 +94,15 @@ router.post("/teacher/makeQR", async function(req,res){
                         req.session.lectureId = lecture.id;
                         req.session.numOfTry = 1;
                         console.log(lecture.id);
-                        res.render("displayQR",{response : qCode,lectureId : lecture.id});
+                        req.session.save(function(err){
+                            if(err){
+                                req.flash("Try Agian, Server Problem");
+                                res.redirect('back');
+                            }
+                            else{
+                                res.render("displayQR",{response : qCode,lectureId : lecture.id});
+                            }
+                        } );
                     }      
                     catch(error){
                         console.log(error);

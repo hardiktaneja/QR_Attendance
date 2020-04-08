@@ -1,16 +1,36 @@
+
 .container{
     display: flex;
 }
 
-.container div h1{
+.studentTeacher div{ 
+    display: flex ;
     /* margin-left: 20%; */
-    margin-top: 30%;
+    /* margin-top: 30%; */
     /* height: auto; */
-    text-align: center;
+    /* text-align: center; */
+    justify-content: center;
+    align-items: center;
 }
 .studentTeacher div{
     width: 50vw;
-    height: 60vh;
+    height: 50vh;
     border: 1px solid black;
-    margin-right: 2px;
+}
+.jumbotron{
+    height: 30vh;
+    margin-bottom: 10px;
+}
+
+@media screen and (max-width : 600px){
+    .studentTeacher div{
+        width: 90vw;
+        height: 45vh;
+        border: 1px solid black;
+        margin-right: 2px;
+    }
+    .studentTeacher{
+        display: flex;
+        flex-direction: column;
+    }
 }

@@ -1,18 +1,28 @@
 <%- include('header'); -%>
-    <table class="table">
-        <tr>
-            <th>Lecture-Id</th>
-            <th>Lecture Time Stamp</th>
-            <th>Batch Name</th>
-            <th>Batch Year</th>
-        </tr>
-        <% fStudent.lecturesAttended.forEach(function(lecture){  %>
+<div class="jumbotron text-center">
+    <h1>Student's DashBoard</h1>
+    <!-- <p>Taking Attendance Made Easy!</p> -->
+    <p>Scan a QR-code via Any App to Add Attendance</p>
+</div>
+<link href="/css/teacherDashboard.css" rel="stylesheet" type="text/css">
+    <div class="container">
+        <table class="table">
             <tr>
-                <td><a href = "/teacher/<%= lecture.id %>/lecture"><%= lecture.id %></a></td>
-                <td><%= lecture.date %></td>
-                <td><%= lecture.batchName %></td>
-                <td><%= lecture.batchYear %></td>
+                <th>S.no.</th>
+                <th>Lecture-Id</th>
+                <th>Lecture Time Stamp</th>
+                <th>Batch Name</th>
+                <th>Batch Year</th>
             </tr>
-        <% }) %>
-    </table>
+            <% fStudent.lecturesAttended.forEach(function(lecture,i){  %>
+                <tr>
+                    <td><%= i %></td>
+                    <td><%= lecture.id %></td>
+                    <td><%= lecture.date %></td>
+                    <td><%= lecture.batchName %></td>
+                    <td><%= lecture.batchYear %></td>
+                </tr>
+            <% }) %>
+        </table>
+    </div>
 <%- include('footer'); -%>

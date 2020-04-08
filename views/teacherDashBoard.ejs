@@ -1,20 +1,37 @@
 <%- include('header'); -%>
-    <h1>All Lectures</h1>
-    <table class="table">
-        <tr>
-            <th>lectureID</th>
-            <th>Batch Name</th>
-            <th>Batch Year</th>
-            <th>Time Stamp</th>
-        </tr>
-        <% fTeacher.lecturesTaken.forEach(function(lecture){  %>
+<!-- <div class="bigJ"> -->
+    <div class="jumbotron text-center">
+        <h1>Teacher's DashBoard</h1>
+        <!-- <p>Taking Attendance Made Easy!</p> -->
+        <p><a class="btn btn-primary btn-lg" href="teacher/makeQR" role="button">Start A New Lecture!</a></p>
+    </div>
+<!-- </div> -->
+<link href="/css/teacherDashboard.css" rel="stylesheet" type="text/css">
+    <div class="center">
+        <h1>All Lectures by <%= currentUser.username %></h1>
+    </div>
+    <div class="container">
+        <table class="table">
             <tr>
-                <td><a href = "/teacher/<%= lecture.id %>/lecture"><%= lecture.id %></a></td>
-                <td><%= lecture.batchName %></td>
-                <td><%= lecture.batchYear %></td>
-                <td><%= lecture.date %></td>
+                <th>S.no.</th>
+                <th>lectureID</th>
+                <th>Batch Name</th>
+                <th>Batch Year</th>
+                <th>Time Stamp</th>
             </tr>
-        <% }) %>
-    </table>
-    <a href="teacher/makeQR"><h2>Add Lecture</h2></a>
+            <% fTeacher.lecturesTaken.forEach(function(lecture,i){  %>
+                <tr>
+                    <td><%= i+1 %></td>
+                    <td><a href = "/teacher/<%= lecture.id %>/lecture"><%= lecture.id %></a></td>
+                    <td><%= lecture.batchName %></td>
+                    <td><%= lecture.batchYear %></td>
+                    <td><%= lecture.date %></td>
+                </tr>
+            <% }) %>
+        </table>
+    </div>
+
+    <div class = "center">
+        <a class="btn btn-primary btn-lg bottom-button" href="teacher/makeQR">Generate new QR CODE</a>
+    </div>
 <%- include('footer'); -%>
