@@ -15,33 +15,33 @@ A Website for taking Attendance digitally.
 ## Web-Site Flow : 
  
  1) Main Page :
- ![MainPage](https://postimg.cc/gnGGT6vB
+ ![MainPage](https://i.postimg.cc/DyT3dLB7/Screen-Shot-2020-04-09-at-12-30-30-AM.png)
  
  To - (Login via Teacher's ID)
  
  2)Teacher's DashBoard :
- ![TeachersDashBoard](https://postimg.cc/v4NMTqCp)
+ ![TeachersDashBoard](https://i.postimg.cc/XvVv2tL7/Screen-Shot-2020-04-09-at-12-18-05-AM.png)
  
  To
  
  3)QR Generation - Detail Page
- ![QRDETAIL](https://postimg.cc/nC1hF1FJ)
+ ![QRDETAIL](https://i.postimg.cc/GhW8jM6H/Screen-Shot-2020-04-09-at-12-30-16-AM.png)
  
  To
  
  4)QR Display Page - Changes Every 30 seconds
  
- ![qrpage](https://postimg.cc/0rc496T4)
+ ![qrpage](https://i.postimg.cc/DyT3dLB7/Screen-Shot-2020-04-09-at-12-30-30-AM.png)
  
  5)Student's DashBoard :
- ![StudentsDashBoard](https://postimg.cc/9r1c5FbX)
+ ![StudentsDashBoard](https://i.postimg.cc/3xQNGkDG/Screen-Shot-2020-04-09-at-12-18-29-AM.png)
  
  
-## Get started : 
-  Install node js on your machine
-  cd to root directory, type "npm install" for dependencies
-  type "node app.js" on  terminal
-  Go to http://localhost:3001
+# Get started
+- Install node js on your machine
+- cd to root directory, type "npm install" for dependencies
+- type "npm app.js" to start the server
+- Go to http://localhost:3001
  
  ## Teach Stack Used :
  - Express + Node.js
