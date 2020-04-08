@@ -17,7 +17,7 @@ Link : https://afternoon-woodland-85688.herokuapp.com/
 ## Web-Site Flow : 
  
  1) Main Page :
- ![MainPage](https://i.postimg.cc/DyT3dLB7/Screen-Shot-2020-04-09-at-12-30-30-AM.png)
+ ![MainPage](https://i.postimg.cc/sDh11Y1y/Screen-Shot-2020-04-09-at-12-17-26-AM.png)
  
  To - (Login via Teacher's ID)
  
