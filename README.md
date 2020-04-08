@@ -3,14 +3,14 @@
 A Website for taking Attendance digitally.
 
 #Features :
-  1)Authentication : Log In, Sign Up etc.
-  2)QR Code Generation and Display (via Teacher's ID ).
-  3)QR Code Dynamically Changes every 30 seconds to prevent proxys.
-  4)Proxy - Free Attendance marking (via Student's ID).
-  5)Teacher's DashBoard to check all lectures given and there attendances.
-  6)Student's DashBoard to check all the lecture Attended.
-  7)Flash Messages to help user navigate the website.
-  8)Scalable and Production - Ready Web-App.
+- Authentication : Log In, Sign Up etc.
+- QR Code Generation and Display (via Teacher's ID ).
+- QR Code Dynamically Changes every 30 seconds to prevent proxys.
+- Proxy - Free Attendance marking (via Student's ID).
+- Teacher's DashBoard to check all lectures given and there attendances.
+- Student's DashBoard to check all the lecture Attended.
+- Flash Messages to help user navigate the website.
+- Scalable and Production - Ready Web-App.
   
 ## Web-Site Flow : 
  
