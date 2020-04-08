@@ -31,9 +31,9 @@ var passport = require("passport"),
     LocalStrategy = require("passport-local"),
     User = require("./models/user");
 
-// mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
-var str1 = "mongodb://hardik:redsozpasta123@ds231956.mlab.com:31956/qr_attendance";
-mongoose.connect(str1,{ useNewUrlParser: true,useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost/qr_attendance",{ useNewUrlParser: true,useUnifiedTopology: true });
+// var str1 = "mongodb://hardik:redsozpasta123@ds231956.mlab.com:31956/qr_attendance";
+// mongoose.connect(str1,{ useNewUrlParser: true,useUnifiedTopology: true });
 
 app.use(bodyparser.urlencoded({extended : true}));
 

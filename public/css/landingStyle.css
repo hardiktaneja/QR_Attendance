@@ -5,10 +5,6 @@
 
 .studentTeacher div{ 
     display: flex ;
-    /* margin-left: 20%; */
-    /* margin-top: 30%; */
-    /* height: auto; */
-    /* text-align: center; */
     justify-content: center;
     align-items: center;
 }
