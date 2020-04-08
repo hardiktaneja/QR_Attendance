@@ -1,18 +1,22 @@
 <%- include('header'); -%>
-    <table class="table">
-        <tr>
-            <th>Name</th>
-            <th>Roll-Number</th>
-            <th>Batch Name</th>
-            <th>Batch Year</th>
-        </tr>
-        <% fLecture.students.forEach(function(student){ %>
+    <div class="container" style = "border: 1px solid darkgray;">
+        <table class="table">
             <tr>
-                <td><%= student.name %></td>
-                <td><%= student.rollNumber %></td>
-                <td><%= fLecture.batchName %></td>
-                <td><%= fLecture.batchYear %></td>
+                <th>S.no.</th>
+                <th>Name</th>
+                <th>Roll-Number</th>
+                <th>Batch Name</th>
+                <th>Batch Year</th>
             </tr>
-        <% } ) %>
-    </table>
+            <% fLecture.students.forEach(function(student,index){ %>
+                <tr>
+                    <td><%= index %></td>
+                    <td><%= student.name %></td>
+                    <td><%= student.rollNumber %></td>
+                    <td><%= fLecture.batchName %></td>
+                    <td><%= fLecture.batchYear %></td>
+                </tr>
+            <% } ) %>
+        </table>
+    </div>
 <%- include('footer'); -%>
