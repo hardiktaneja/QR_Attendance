@@ -28,33 +28,33 @@ router.get("/teacher/makeQR",middleware.isLoggedIn,middleware.roleCheckTeacher,f
 } );
 
 router.post("/teacher/makeQR", async function(req,res){
-    if(req.session.qrCreated){
-        var numOfTry = req.session.numOfTry +1;
-        try{
-            // var url = "http://localhost:3001/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
-            var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
-            var qCode = await qrcode.toDataURL(url);
-            req.session.numOfTry = numOfTry;
-            req.session.save(function(err){
-                if(err){
-                    console.log(err);
-                    req.flash("Try Again, Some error occured!");
-                    res.redirect("back");
-                }
-                else{
-                    res.render("displayQR",{response : qCode,lectureId : req.session.lectureId});
-                }
-            } );
-            return;
-        }      
-        catch(error){
-            // console.log("=============================");
-            console.log(error);
-            req.flash("error","QR Couldn't be Created!");
-            // res.send("Teacher Not Found !");
-            res.redirect("back");
-        }
-    }
+//     if(req.session.qrCreated){
+//         var numOfTry = req.session.numOfTry +1;
+//         try{
+//             // var url = "http://localhost:3001/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
+//             var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
+//             var qCode = await qrcode.toDataURL(url);
+//             req.session.numOfTry = numOfTry;
+//             req.session.save(function(err){
+//                 if(err){
+//                     console.log(err);
+//                     req.flash("Try Again, Some error occured!");
+//                     res.redirect("back");
+//                 }
+//                 else{
+//                     res.render("displayQR",{response : qCode,lectureId : req.session.lectureId});
+//                 }
+//             } );
+//             return;
+//         }      
+//         catch(error){
+//             // console.log("=============================");
+//             console.log(error);
+//             req.flash("error","QR Couldn't be Created!");
+//             // res.send("Teacher Not Found !");
+//             res.redirect("back");
+//         }
+//     }
     //Getting Parameters from form
     var batchName = req.body.batchName;
     var batchYear = req.body.batchYear;
@@ -114,6 +114,41 @@ router.post("/teacher/makeQR", async function(req,res){
         }
     } );
 
+} );
+
+router.post("/teacher/refreshQR",async function(req,res){
+    if(req.session.qrCreated){
+        // console.log("=============================");
+        // console.log(req.session.qrCreated);
+        var numOfTry = req.session.numOfTry +1;
+        try{
+            // var url = "http://localhost:3001/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
+            var url = "https://afternoon-woodland-85688.herokuapp.com/student/"+req.session.lectureId+"/"+numOfTry+"/addAttendance";
+            var qCode = await qrcode.toDataURL(url);
+            req.session.numOfTry = numOfTry;
+            req.session.save(function(err){
+                if(err){
+                    console.log(err);
+                    req.flash("Try Again, Some error occured!");
+                    res.redirect("back");
+                }
+                else{
+                    res.render("displayQR",{response : qCode,lectureId : req.session.lectureId});
+                }
+            } );
+            return;
+        }      
+        catch(error){
+            // console.log("=============================");
+            console.log(error);
+            req.flash("error","QR Couldn't be Created!");
+            // res.send("Teacher Not Found !");
+            res.redirect("back");
+        }
+    }
+    else{
+        res.send("You cannot do this");
+    }
 } );
 
 
